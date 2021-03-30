@@ -29,3 +29,13 @@
 \ TODO: stub
 : dir? ( c-addr u -- flag ior )
     2drop false 0 ;
+
+\ change working directory
+/max-dirname allocate throw constant getdir-buffer
+: get-wd ( -- c-addr n )
+    \ *G get working directory
+    getdir-buffer /max-dirname get-dir ;
+
+: set-wd ( c-addr n -- ior )
+    \ *G set working directory
+    set-dir ;

@@ -8,7 +8,7 @@ Authors: Ulrich Hoffmann & Gerald Wodni
 ### `open-dir ( c-addr u -- dirid ior )`
 Open the directory specified by c-addr, u and return dir-id for futher access to it.
 
-### `read-dir ( c-addr u1 dirid -- u2 flag ior )`
+### `read-dir ( dir-id -- c-addr u ior )`
 Attempt to read the next entry from the directory specified by dir-id to the buffer of length u1 at address c-addr. If the attempt fails because there is no more entries, ior=0, flag=0, u2=0, and the buffer is unmodified. If the attempt to read the next entry fails because of any other reason, return ior<>0. If the attempt succeeds, store file name to the buffer at c-addr and return ior=0, flag=true and u2 equal to the size of the file name. If the length of the file name is greater than u1, store first u1 characters from file name into the buffer and indicate "name too long" with ior, flag=true, and u2=u1.
 
 ### `close-dir ( dirid -- ior )`
@@ -16,6 +16,46 @@ Close the directory specified by dir-id.
 
 ### `traverse-dir ( ix c-addr u xt -- kx ) with xt taking ( ix c-addr-filename u-filename -- jx )`
 Possible alternative/addition to the upper three words. Suggested by Bernd Paysan and Matthias Trute
+
+## Working directories
+### `get-wd ( -- c-addr n )`
+Return working directory
+
+### `set-wd ( c-addr n -- ior )`
+Set working directory
+
+### Common interactive extensions
+### `pwd ( -- )`
+Print working directory
+
+```forth
+: pwd ( -- )
+    get-wd type ;
+```
+
+### `cwd ( <parse-name> -- )`
+Change working directory
+
+```forth
+: cwd ( <parse-name> -- )
+    parse-name set-wd throw ;
+```
+
+### `ls ( [<parse-name>] -- )`
+Print contents of supplier directory. If no argument is given, use working directory.
+
+```forth
+: (ls-item) ( c-addr n -- )
+    cr type ;
+: ls ( [<parse-name>] -- )
+    \ *G show content of parsed directory, if none is given show current directory
+    parse-name
+    dup 0= if \ no argument
+        2drop
+        get-wd
+    then
+    ['] (ls-item) traverse-dir ;
+```
 
 ## Words for pathes:
 Description take from the Node.js manual

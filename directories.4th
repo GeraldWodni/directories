@@ -24,6 +24,20 @@
 [DEFINED-OR-DIE] close-dir
 [DEFINED-OR-DIE] create-dir
 
+\ traverse words (build upon basic upper words)
+\ TODO: sort entries?
+: traverse-dir ( ix c-addr u xt -- kx )
+    >r \ save xt
+    open-dir throw
+    begin
+        dup read-dir throw dup 0<>
+    while
+        rot r@ swap >r \ get xt, save dir-id
+        execute ( ix c-addr-filename u-filename -- jx )
+        r> \ restore dir-id
+    repeat 2drop
+    close-dir throw
+    r> drop ; \ drop xt
 
 \ words for pathes (pure sting implementations)
 
@@ -61,3 +75,24 @@
 
 : parent-dir? ( c-addr1 u1 -- f )
     >r r@ parent-dir nip r> = ;
+
+\ common interactive extensions
+
+: pwd ( -- )
+    \ Print working directory
+    get-wd type ;
+
+: cwd ( <parse-name> -- )
+    \ *G change to working directory
+    parse-name set-wd throw ;
+
+: (ls-item) ( c-addr n -- )
+    cr type ;
+: ls ( [<parse-name>] -- )
+    \ *G show content of parsed directory, if none is given show current directory
+    parse-name
+    dup 0= if \ no argument
+        2drop
+        get-wd
+    then
+    ['] (ls-item) traverse-dir ;
