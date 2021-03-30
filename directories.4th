@@ -82,7 +82,7 @@
     \ Print working directory
     get-wd type ;
 
-: cwd ( <parse-name> -- )
+: cd ( <parse-name> -- )
     \ *G change to working directory
     parse-name set-wd throw ;
 

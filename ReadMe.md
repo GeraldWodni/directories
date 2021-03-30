@@ -33,11 +33,11 @@ Print working directory
     get-wd type ;
 ```
 
-### `cwd ( <parse-name> -- )`
+### `cd ( <parse-name> -- )`
 Change working directory
 
 ```forth
-: cwd ( <parse-name> -- )
+: cd ( <parse-name> -- )
     parse-name set-wd throw ;
 ```
 
