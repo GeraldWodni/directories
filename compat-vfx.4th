@@ -34,8 +34,27 @@
 \ create-dir ( c-addr u -- ior )
 \ hint: proposal name differs, see Stephen Pelc's comment: https://forth-standard.org/proposals/directory-experiemental-proposal#reply-85
 
+/max-dirname allocate throw constant getdir-buffer
+: get-wd ( -- c-addr n )
+    \ *G get working directory
+    getdir-buffer /max-dirname getcwd 0= if
+        0 0
+    else
+        getdir-buffer zcount
+    then ;
+
+: set-wd ( c-addr n -- ior )
+    \ *G set working directory
+    {: | temp[ /max-dirname ] -- :}
+    temp[ zplace
+    temp[ chdir -1 = if
+        errno @
+    else
+        0
+    then ;
+
 : find-name ( c-addr n -- xt | 0 )
-  {: | temp[ #256 ] -- :}
-  temp[ place
-  temp[ find 0= if nip 0 then ;
+    {: | temp[ #256 ] -- :}
+    temp[ place
+    temp[ find 0= if nip 0 then ;
 
